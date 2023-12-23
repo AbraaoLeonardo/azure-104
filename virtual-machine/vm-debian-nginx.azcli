@@ -1,0 +1,27 @@
+# Login
+az login
+
+# variables
+rg=rg-debian-nginx
+local=brazilsouth
+vm=debian-nginx
+user=abraao284
+img=debian11
+
+# create the rg
+az group create -n $rg -l $local
+
+# Create the vm
+az vm create -n $vm -g $rg --admin-user $user --image $img --generate-ssh-keys --public-ip-sku Basic
+
+# Open the port 80
+az vm open-port --port 80 -n $vm -g $rg
+
+# Install nginx
+az vm run-command invoke -n $vm -g $rg --command-id RunShellScript --scripts "sudo apt update && sudo apt install nginx -y && sudo apt autoclean"
+
+# Get the Public Ip
+az vm show -d -n $vm -g $rg --query publicIp -o tsv
+
+# delete the resource group
+az group delete -n $rg -y

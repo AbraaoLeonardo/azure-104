@@ -1,0 +1,27 @@
+# Login on azure account
+az login
+
+# variables
+rg=rg-vm-debian
+local=brazilsouth
+vm=vm-debian
+img=Debian11
+user=azureuser
+
+# Create Resource Group
+az group create -n $rg -l $local
+
+# Create the tags
+az tag create --resource-id  --tags Environment=Test
+
+# Create the Virtual Machine
+az vm create -g $rg -n $vm --image $img --admin-username $user --admin-password trin@mento12
+
+# Open the port 80
+az vm open-port --port 80 -g $rg -n $vm
+
+# verify the vm information
+az vm show -g $rg -n $vm -o yaml
+
+# Now we make all test, we need to delete the vm to not pay anything more.
+az group delete -n $rg -y
